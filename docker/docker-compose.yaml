@@ -51,6 +51,9 @@ x-default-isaac-sim-volumes: &default-isaac-sim-volumes
   - type: bind
     source: ../pyproject.toml
     target: ${DOCKER_PACKAGE_PATH}/pyproject.toml
+  - type: bind
+    source: ../README.md
+    target: ${DOCKER_PACKAGE_PATH}/README.md
     ###################################################################
 
 x-default-isaac-sim-environment: &default-isaac-sim-environment

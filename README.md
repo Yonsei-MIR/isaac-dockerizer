@@ -60,11 +60,12 @@ If you don't need to use GUI attached, just run on headless mode without port ma
 4. Launch streaming client on localhost.
 
 ## Initialize your own package
-`pyproject.toml`, `src/`, `tests/`, `scripts/` are bind-mounted so that users can develop their own package based on poetry-convention.  
+`pyproject.toml`, `README.md`,`src/`, `tests/`, `scripts/` are bind-mounted so that users can develop their own package based on poetry-convention.  
 ### Modifications
 To initialize your own package, modify following files:  
 - `pyproject.toml`
 - `docker/.env.base` -> `DOCKER_PACKAGE_PATH` (path to your package on container)
+- `README.md`: **Modify this README file to your own package's README!**
 - `src/`: locate your package here!
 - `tests/`: for test codes
 - `scripts/`: for shell scripts
