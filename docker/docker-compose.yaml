@@ -6,31 +6,31 @@ x-default-isaac-sim-volumes: &default-isaac-sim-volumes
   # These volumes follow from this page
   # https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_faq.html#save-isaac-sim-configs-on-local-disk
   - type: volume
-    source: isaacsim-cache-kit
+    source: isaac-cache-kit
     target: ${DOCKER_ISAACSIM_ROOT_PATH}/kit/cache
   - type: volume
-    source: isaacsim-cache-ov
+    source: isaac-cache-ov
     target: ${DOCKER_USER_HOME}/.cache/ov
   - type: volume
-    source: isaacsim-cache-pip
+    source: isaac-cache-pip
     target: ${DOCKER_USER_HOME}/.cache/pip
   - type: volume
-    source: isaacsim-cache-gl
+    source: isaac-cache-gl
     target: ${DOCKER_USER_HOME}/.cache/nvidia/GLCache
   - type: volume
-    source: isaacsim-cache-compute
+    source: isaac-cache-compute
     target: ${DOCKER_USER_HOME}/.nv/ComputeCache
   - type: volume
-    source: isaacsim-logs
+    source: isaac-logs
     target: ${DOCKER_USER_HOME}/.nvidia-omniverse/logs
   - type: volume
-    source: isaacsim-carb-logs
+    source: isaac-carb-logs
     target: ${DOCKER_ISAACSIM_ROOT_PATH}/kit/logs/Kit/Isaac-Sim
   - type: volume
-    source: isaacsim-data
+    source: isaac-data
     target: ${DOCKER_USER_HOME}/.local/share/ov/data
   - type: volume
-    source: isaacsim-docs
+    source: isaac-docs
     target: ${DOCKER_USER_HOME}/Documents
     ###################################################################
     # Manual volumes
@@ -62,10 +62,17 @@ x-default-isaac-sim-deploy: &default-isaac-sim-deploy
     reservations:
       devices:
         - driver: nvidia
+          count: all
+          capabilities: [ gpu ]
+
+x-default-isaac-sim-deploy-custom: &default-isaac-sim-deploy-custom
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
           device_ids: ["${GPU_DEVICE_ID}"]
           #device_ids: ['0']
           capabilities: [ gpu ]
-
 ########################################################################
 # Default ports
 ########################################################################
@@ -97,7 +104,6 @@ x-default-isaac-sim-base: &default-isaac-sim-base
   image: nvcr.io/nvidia/isaac-sim:${ISAACSIM_VERSION}
   environment: *default-isaac-sim-environment
   volumes: *default-isaac-sim-volumes
-  deploy: *default-isaac-sim-deploy
   entrypoint: bash
   stdin_open: true
   tty: true
@@ -106,12 +112,14 @@ x-default-isaac-sim-base: &default-isaac-sim-base
 services:
   isaac-sim-base:
     <<: *default-isaac-sim-base
+    deploy: *default-isaac-sim-deploy
     profiles: [ "base" ]
     container_name: ${USER}-isaac-base-dockerize-${ISAACSIM_VERSION}
     env_file: .env.base
     network_mode: host
   isaac-sim-base-mapped:
     <<: *default-isaac-sim-base
+    deploy: *default-isaac-sim-deploy-custom
     profiles: [ "base-mapped" ]
     container_name: ${USER}-isaac-base-mapped-dockerize-${ISAACSIM_VERSION}
     env_file: .env.base
@@ -119,12 +127,12 @@ services:
 
 volumes:
   # isaac-sim
-  isaacsim-cache-kit:
-  isaacsim-cache-ov:
-  isaacsim-cache-pip:
-  isaacsim-cache-gl:
-  isaacsim-cache-compute:
-  isaacsim-logs:
-  isaacsim-carb-logs:
-  isaacsim-data:
-  isaacsim-docs:
+  isaac-cache-kit:
+  isaac-cache-ov:
+  isaac-cache-pip:
+  isaac-cache-gl:
+  isaac-cache-compute:
+  isaac-logs:
+  isaac-carb-logs:
+  isaac-data:
+  isaac-docs:
