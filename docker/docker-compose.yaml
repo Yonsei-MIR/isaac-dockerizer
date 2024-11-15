@@ -1,0 +1,130 @@
+# Here we set the parts that would
+# be re-used between services to an
+# extension field
+# https://docs.docker.com/compose/compose-file/compose-file-v3/#extension-fields
+x-default-isaac-sim-volumes: &default-isaac-sim-volumes
+  # These volumes follow from this page
+  # https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_faq.html#save-isaac-sim-configs-on-local-disk
+  - type: volume
+    source: isaacsim-cache-kit
+    target: ${DOCKER_ISAACSIM_ROOT_PATH}/kit/cache
+  - type: volume
+    source: isaacsim-cache-ov
+    target: ${DOCKER_USER_HOME}/.cache/ov
+  - type: volume
+    source: isaacsim-cache-pip
+    target: ${DOCKER_USER_HOME}/.cache/pip
+  - type: volume
+    source: isaacsim-cache-gl
+    target: ${DOCKER_USER_HOME}/.cache/nvidia/GLCache
+  - type: volume
+    source: isaacsim-cache-compute
+    target: ${DOCKER_USER_HOME}/.nv/ComputeCache
+  - type: volume
+    source: isaacsim-logs
+    target: ${DOCKER_USER_HOME}/.nvidia-omniverse/logs
+  - type: volume
+    source: isaacsim-carb-logs
+    target: ${DOCKER_ISAACSIM_ROOT_PATH}/kit/logs/Kit/Isaac-Sim
+  - type: volume
+    source: isaacsim-data
+    target: ${DOCKER_USER_HOME}/.local/share/ov/data
+  - type: volume
+    source: isaacsim-docs
+    target: ${DOCKER_USER_HOME}/Documents
+    ###################################################################
+    # Manual volumes
+    # src directory
+  - type: bind
+    source: ../src
+    target: ${DOCKER_PACKAGE_PATH}/src
+    # Test directory
+    # Used if necessary
+  - type: bind
+    source: ../tests
+    target: ${DOCKER_PACKAGE_PATH}/tests
+    # Scripts
+  - type: bind
+    source: ../scripts
+    target: ${DOCKER_PACKAGE_PATH}/scripts
+    # Installation file
+  - type: bind
+    source: ../pyproject.toml
+    target: ${DOCKER_PACKAGE_PATH}/pyproject.toml
+    ###################################################################
+
+x-default-isaac-sim-environment: &default-isaac-sim-environment
+  - isaac_sim_package_path=${DOCKER_ISAACSIM_ROOT_PATH}
+  - OMNI_KIT_ALLOW_ROOT=1
+
+x-default-isaac-sim-deploy: &default-isaac-sim-deploy
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
+          device_ids: ["${GPU_DEVICE_ID}"]
+          #device_ids: ['0']
+          capabilities: [ gpu ]
+
+########################################################################
+# Default ports
+########################################################################
+x-default-isaac-sim-ports: &default-isaac-sim-ports
+    - "${ISAAC_PORT_0}-${ISAAC_PORT_1}:8011-8012" # 2
+    - "${ISAAC_PORT_2}:8211" # 1
+    - "${ISAAC_PORT_3}:8891" # 1
+    - "${ISAAC_PORT_4}:8899" # 1
+    - "${ISAAC_PORT_5}-${ISAAC_PORT_6}:47995-48012" # 18
+    - "${ISAAC_PORT_5}-${ISAAC_PORT_6}:47995-48012/udp"
+    - "${ISAAC_PORT_7}-${ISAAC_PORT_8}:49000-49007" # 1
+    - "${ISAAC_PORT_7}-${ISAAC_PORT_8}:49000-49007/udp"
+    - "${ISAAC_PORT_9}:49100"
+# x-default-isaac-sim-ports: &default-isaac-sim-ports
+#     - "8011-8012:8011-8012" # 2
+#     - "8211:8211" # 1
+#     - "8891:8891" # 1
+#     - "8899:8899" # 1
+#     - "47995-48012:47995-48012" # 18
+#     - "47995-48012:47995-48012/udp"
+#     - "49000-49007:49000-49007" # 1
+#     - "49000-49007:49000-49007/udp"
+#     - "49100:49100"
+########################################################################
+
+# Profile sharing
+x-default-isaac-sim-base: &default-isaac-sim-base
+  shm_size: "32gb"
+  image: nvcr.io/nvidia/isaac-sim:${ISAACSIM_VERSION}
+  environment: *default-isaac-sim-environment
+  volumes: *default-isaac-sim-volumes
+  deploy: *default-isaac-sim-deploy
+  entrypoint: bash
+  stdin_open: true
+  tty: true
+
+
+services:
+  isaac-sim-base:
+    <<: *default-isaac-sim-base
+    profiles: [ "base" ]
+    container_name: ${USER}-isaac-base-dockerize-${ISAACSIM_VERSION}
+    env_file: .env.base
+    network_mode: host
+  isaac-sim-base-mapped:
+    <<: *default-isaac-sim-base
+    profiles: [ "base-mapped" ]
+    container_name: ${USER}-isaac-base-mapped-dockerize-${ISAACSIM_VERSION}
+    env_file: .env.base
+    ports: *default-isaac-sim-ports
+
+volumes:
+  # isaac-sim
+  isaacsim-cache-kit:
+  isaacsim-cache-ov:
+  isaacsim-cache-pip:
+  isaacsim-cache-gl:
+  isaacsim-cache-compute:
+  isaacsim-logs:
+  isaacsim-carb-logs:
+  isaacsim-data:
+  isaacsim-docs:
