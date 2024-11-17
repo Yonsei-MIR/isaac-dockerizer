@@ -39,7 +39,7 @@ If you don't need to use GUI attached, just run on headless mode without port ma
 - Server: [[link]](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html)
 - Client: 
 
-## Usage
+## Using docker
 ### Server-side
 1. Modify values on `docker/.env.base`.
 2. Launch below script on server.
@@ -59,9 +59,12 @@ If you don't need to use GUI attached, just run on headless mode without port ma
     - on Linux: `client/port_forward.sh`
 4. Launch streaming client on localhost.
 
-## Initialize your own package
+## Using singularity
+Request to [Sungwoong Kim](sukim96@yonsei.ac.kr)!
+
+# Initialize your own package
 `pyproject.toml`, `README.md`,`src/`, `tests/`, `scripts/` are bind-mounted so that users can develop their own package based on poetry-convention.  
-### Modifications
+## Modifications
 To initialize your own package, modify following files:  
 - `pyproject.toml`
 - `docker/.env.base` -> `DOCKER_PACKAGE_PATH` (path to your package on container)
@@ -70,12 +73,12 @@ To initialize your own package, modify following files:
 - `tests/`: for test codes
 - `scripts/`: for shell scripts
 
-### Installation (on docker)
+## Installation (on docker)
 ```bash
 ${DOCKER_PACKAGE_PATH}/scripts/install_package.sh
 ```
 
-## Additional volumes mounting  
+# Additional volumes mounting  
 To use your local data, add volumes on `docker-compose.yaml`.  
 You can add your volume on "Manual volumes" section.  
 
