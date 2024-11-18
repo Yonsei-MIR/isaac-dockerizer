@@ -6,14 +6,13 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 source ./instances/.env.sh
 
 echo "ISAAC_CACHE_DIR:$ISAAC_CACHE_DIR"
-mkdir -p ${ISAAC_CACHE_DIR}/kit_cache
 
 start_instance() {
     singularity exec --fakeroot --net \
         --network fakeroot \
         --nv --containall \
         --dns "${NAMESERVER}" \
-         --env ACCEPT_EULA=Y \
+        --env ACCEPT_EULA=Y \
         -B ${ISAAC_CACHE_DIR}/cache/kit:/isaac-sim/kit/cache:rw \
         -B ${ISAAC_CACHE_DIR}/cache/ov:/root/.cache/ov:rw \
         -B ${ISAAC_CACHE_DIR}/cache/pip:/root/.cache/pip:rw \
@@ -22,7 +21,6 @@ start_instance() {
         -B ${ISAAC_CACHE_DIR}/logs:/root/.nvidia-omniverse/logs:rw \
         -B ${ISAAC_CACHE_DIR}/data:/root/.local/share/ov/data:rw \
         -B ${ISAAC_CACHE_DIR}/documents:/root/Documents:rw \
-        -B ${ISAAC_CACHE_DIR}/kit_cache:/isaac-sim/kit/cache \
         --network-args "portmap=$((BASEPORT +  0)):8011/tcp" \
         --network-args "portmap=$((BASEPORT +  1)):8012/tcp" \
         --network-args "portmap=$((BASEPORT +  2)):8211/tcp" \
