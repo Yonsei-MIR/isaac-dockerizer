@@ -139,7 +139,7 @@ echo "[INFO] Using container profile: $container_profile"
 source $SCRIPT_DIR/.env.base
 
 # Set image name (with tag)
-IMAGE_NAME="isaac-sim-$container_profile:${ISAACSIM_VERSION}"
+IMAGE_NAME="mirlab/isaac-sim:${ISAACSIM_VERSION}-$container_profile"
 
 # Set container name
 # CONTAINER_NAME="$USER-$(echo $IMAGE_NAME | sed 's|:|-|')"
