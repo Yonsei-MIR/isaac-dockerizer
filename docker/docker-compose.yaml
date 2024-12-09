@@ -111,6 +111,22 @@ x-default-isaac-sim-base: &default-isaac-sim-base
   stdin_open: true
   tty: true
 
+x-default-isaac-sim-ros2: &default-isaac-sim-ros2
+  shm_size: "32gb"
+  env_file:
+      - .env.base
+      - .env.ros2
+  build:
+    context: ../
+    dockerfile: docker/Dockerfile.ros2
+    args:
+      # ROS2_APT_PACKAGE will default to NONE. This is to
+      # avoid a warning message when building only the base profile
+      # with the .env.base file
+      - ROS2_APT_PACKAGE=${ROS2_APT_PACKAGE:-NONE}
+      # Get version package as args
+      - ISAACSIM_VERSION=${ISAACSIM_VERSION:-'latest'}
+  image: mirlab/isaac-sim:${ISAACSIM_VERSION}-ros2
 
 services:
   isaac-sim-base:
@@ -126,6 +142,24 @@ services:
     profiles: [ "base-mapped" ]
     container_name: ${USER}-isaac-base-mapped-dockerize-${ISAACSIM_VERSION}
     env_file: .env.base
+    ports: *default-isaac-sim-ports
+  isaac-sim-ros2:
+    <<: *default-isaac-sim-ros2
+    deploy: *default-isaac-sim-deploy
+    profiles: [ "ros2" ]
+    container_name: ${USER}-isaac-ros2-dockerize-${ISAACSIM_VERSION}
+    env_file:
+      - .env.base
+      - .env.ros2
+    network_mode: host
+  isaac-sim-ros2-mapped:
+    <<: *default-isaac-sim-ros2
+    deploy: *default-isaac-sim-deploy
+    profiles: [ "ros2-mapped" ]
+    container_name: ${USER}-isaac-ros2-dockerize-${ISAACSIM_VERSION}
+    env_file:
+      - .env.base
+      - .env.ros2
     ports: *default-isaac-sim-ports
 
 volumes:
