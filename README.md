@@ -8,6 +8,8 @@ Convention from: [IsaacLab v1.0.0](https://github.com/isaac-sim/IsaacLab/tree/v1
 For more details on isaac-sim docker installation,  
 refer to: [[link]](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html)  
 
+**Note) This package only provides dockerizing kit, not python package itself!**  
+
 # Usage: Native (with X11)
 ## Purpose
 **Use on workstation**  
